@@ -11,17 +11,18 @@ def is_prime(n):
     return True
 
 
-def first_n_primes(n):
+def up_to_n_primes(n):
     primes = []
-    number = 2  # Start checking from the first prime number
 
-    while len(primes) < n:
+    for number in range(2, n):
         if is_prime(number):
             primes.append(number)
-        number += 1  # Increment to check the next number
+
 
     return primes
 
-n = 10001
-primes = first_n_primes(n)
+n = 2 * (10**6)
+primes = up_to_n_primes(n)
 print(primes)
+print(sum(primes))
+
