@@ -1,3 +1,5 @@
+from collections import deque
+
 bricks = [list(map(int, line.replace('~', ',').split(','))) for line in open('input').read().splitlines()]
 bricks.sort(key=lambda b: b[2])
 
@@ -28,7 +30,17 @@ for i, higher in enumerate(bricks):
 
 total = 0
 for i in range(len(bricks)):
-    if all(len(v_supports_k[j]) > 1 for j in k_supports_v[i]):
-        total += 1
+    q = deque(j for j in k_supports_v[i] if len(v_supports_k[j]) == 1)
+    falling = set(q)
+    falling.add(i)
+
+    while q:
+        j = q.popleft()
+        for k in k_supports_v[j] - falling:
+            if v_supports_k[k] <= falling:
+                q.append(k)
+                falling.add(k)
+
+    total += len(falling) - 1
 
 print(total)
