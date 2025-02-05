@@ -1,3 +1,4 @@
+import math
 from collections import deque
 
 lines = open('input').read().split('\n')
@@ -21,20 +22,30 @@ for line in lines:
 
         conjunctions[k] = (inputs, v)
 
+feed, = [k for k, v in conjunctions.items() if 'rx' in v[1]]
+cycle_lengths = {}
+seen = {name: 0 for name, v in conjunctions.items() if feed in v[1]}
 
-def press(l, h):
-    print('button -low-> brd')
-    l += 1
+def press(presses):
     q = deque(broadcasts)
     while q:
         node, signal, sender = q.popleft()
-        pretty_signal = 'high' if signal == 'H' else 'low'
-        print(f'{sender} -{pretty_signal}> {node}')
 
-        if signal == 'L':
-            l += 1
-        elif signal:
-            h += 1
+        if node == feed and signal == 'H':
+            seen[sender] += 1
+
+            if sender not in cycle_lengths:
+                cycle_lengths[sender] = presses
+            else:
+                assert presses == seen[sender] * cycle_lengths[sender]
+
+            if all(seen.values()):
+                ans = 1
+                print(cycle_lengths)
+                for lengths in cycle_lengths.values():
+                    ans = math.lcm(ans, lengths)
+                print(ans)
+                exit(0)
 
         if node in flip_flops:
             if signal == 'H':
@@ -62,10 +73,8 @@ def press(l, h):
             for o in outputs:
                 q.append((o, next_signal, node))
 
-    return l, h
 
-l, h = 0, 0
-for _ in range(1000):
-    l, h = press(l, h)
-print(l, h)
-print(l * h)
+presses = 0
+while True:
+    presses += 1
+    press(presses)
