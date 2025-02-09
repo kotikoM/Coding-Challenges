@@ -18,7 +18,7 @@ def operate(n, s, e):
         a = columns[s].pop()
         moved.append(a)
 
-    columns[e] += moved
+    columns[e] += moved[::-1]
 
 
 _, instructions = open('input').read().split('\n\n')
