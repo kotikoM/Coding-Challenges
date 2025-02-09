@@ -1,15 +1,19 @@
 def play(a, b):
-    scores = {'X': 1, 'A': 1, 'B': 2, 'Y': 2, 'C': 3, 'Z': 3}
-
-    round_score = 0
-    if (a == 'A' and b == 'X') or (a == 'B' and b == 'Y') or (a == 'C' and b == 'Z'):
-        round_score = 3
+    scores = {'A': 1, 'B': 2, 'C': 3, 'X': 0, 'Y': 3, 'Z': 6}
+    lose = {'A': 'C', 'B': 'A', 'C': 'B'}
+    tie = {'A': 'A', 'B': 'B', 'C': 'C'}
+    win = {'A': 'B', 'B': 'C', 'C': 'A'}
 
     # A - rock, B - paper, C - scissors
-    # X - rock, Y - paper, Z - scissors
-    elif (b == 'X' and a == 'C') or (b == 'Y' and a == 'A') or (b == 'Z' and a == 'B'):
-        round_score = 6
-    return scores[b] + round_score
+    select_score = 0
+    if b == 'X':
+        select_score = scores[lose[a]]
+    elif b == 'Y':
+        select_score = scores[tie[a]]
+    elif b == 'Z':
+        select_score = scores[win[a]]
+
+    return select_score + scores[b]
 
 
 total = 0
