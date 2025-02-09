@@ -1,11 +1,10 @@
 bags = [l for l in open('input').read().splitlines()]
 
 appears_both = []
-for b in bags:
-    assert len(b) % 2 == 0
+for i in range(0, len(bags), 3):
+    b1, b2, b3 = bags[i], bags[i + 1], bags[i + 2]
 
-    left, right = b[:len(b) // 2], b[len(b) // 2:]
-    intersection = set(left) & set(right)
+    intersection = set(b1) & set(b2) & set(b3)
     appears_both.append(intersection.pop())
 
 
