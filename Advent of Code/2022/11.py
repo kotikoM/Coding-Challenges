@@ -1,4 +1,5 @@
 monkeys = []
+modulo = 1
 
 
 def send(to, item):
@@ -22,7 +23,7 @@ class Monkey:
         self.items.append(item)
 
     def __play__(self):
-        new_items = [(self.op(item) // 3) for item in self.items]
+        new_items = [((self.op(item)) % modulo) for item in self.items]
         self.inspected += len(new_items)
         self.items = []
 
@@ -51,15 +52,16 @@ for monkey in open('input').read().split('\n\n'):
         else:
             func = lambda old, val=int(operand): old + val
 
-    divisible_by = test.split()[-1]
-    test = lambda n, div_by=int(divisible_by): n % div_by == 0
+    divisible_by = int(test.split()[-1])
+    modulo *= divisible_by
+    test = lambda n, div_by=divisible_by: n % div_by == 0
 
     true_monkey = true.split()[-1]
     false_monkey = false.split()[-1]
 
     monkeys.append(Monkey(name, items, func, test, true_monkey, false_monkey))
 
-for _ in range(20):
+for _ in range(10_000):
     for m in monkeys:
         m.__play__()
 
