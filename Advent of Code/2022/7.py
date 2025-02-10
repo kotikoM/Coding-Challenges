@@ -71,14 +71,19 @@ while pointer < len(lines):
             pointer += 1
 
 
-num = 0
-def find_dirs_more_than_100k(dir):
-    global num
-    if dir.size <= 100000:
-        num += dir.size
+sizes = [root.size]
+def add_all_files(dir):
+    global sizes
+    if dir.children:
+        for d in dir.children:
+            sizes.append(d.size)
 
     for child in dir.children:
-        find_dirs_more_than_100k(child)
+        add_all_files(child)
 
-find_dirs_more_than_100k(root)
-print(num)
+add_all_files(root)
+
+for s in sorted(sizes):
+    if root.size - s <= (70000000 - 30000000):
+        print(s)
+        break
