@@ -1,25 +1,21 @@
 grid = [list(map(int, l)) for l in open('input').read().splitlines()]
 
 
-def is_visible(x, y):
+def score(x, y):
+    final_score = 1
     for dx, dy in [(0, -1), (0, 1), (1, 0), (-1, 0)]:
-        around_trees = []
+        total = 0
         nx, ny = x, y
         while 0 <= nx + dx < len(grid) and 0 <= ny + dy < len(grid[0]):
             nx, ny = nx + dx, ny + dy
-            around_trees.append(grid[nx][ny])
+            if grid[nx][ny] >= grid[x][y]:
+                total += 1
+                break
+            total += 1
+        final_score *= total
 
-        if all(a < grid[x][y] for a in around_trees):
-            return True
-
-    return False
+    return final_score
 
 
-visible = 2 * len(grid) + 2 * len(grid[0]) - 4
-
-for x in range(1, len(grid) - 1):
-    for y in range(1, len(grid[0]) - 1):
-        if is_visible(x, y):
-            visible += 1
-
-print(visible)
+scores = [score(x, y) for x in range(len(grid)) for y in range(len(grid[0]))]
+print(max(scores))
