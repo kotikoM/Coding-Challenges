@@ -13,15 +13,13 @@ for line in open('input'):
                 abyss = max(abyss, y + 1)
 
 n = 0
-while True:
+while (500, 0) not in rocks:
     s = (500, 0)
 
     while True:
         x, y = s
         if y >= abyss:
-            print(n)
-            exit(0)
-
+            break
         if (x, y + 1) not in rocks:
             s = (x, y + 1)
             continue
@@ -31,7 +29,8 @@ while True:
         if (x + 1, y + 1) not in rocks:
             s = (x + 1, y + 1)
             continue
-
-        rocks.add(s)
-        n += 1
         break
+    rocks.add(s)
+    n += 1
+
+print(n)
