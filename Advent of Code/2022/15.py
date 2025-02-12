@@ -1,18 +1,45 @@
 import re
 
-interested_row = set()
-target_row = 2_000_000
+lines = [list(map(int, re.findall(r"-?\d+", line))) for line in open('input')]
 
-for line in open('input').read().splitlines():
-    sx, sy, bx, by = map(int, re.findall(r'-?\d+', line))
-    max_dist = abs(bx - sx) + abs(by - sy)
+target_row = 20
 
-    if abs(sy - target_row) > max_dist:
-        continue
+for Y in range(target_row + 1):
+    intervals = []
 
-    dx = max_dist - abs(sy - target_row)
-    for x in range(sx - dx, sx + dx + 1):
-        if x != bx:
-            interested_row.add(x)
+    for sx, sy, bx, by in lines:
+        max_dist = abs(sx - bx) + abs(sy - by)
+        overlap = max_dist - abs(sy - Y)
 
-print(len(interested_row))
+        if overlap < 0:
+            continue
+
+        lx = sx - overlap
+        hx = sx + overlap
+
+        intervals.append((lx, hx))
+
+    intervals.sort()
+
+    q = []
+    for lo, hi in intervals:
+        if not q:
+            q.append([lo, hi])
+            continue
+
+        qlo, qhi = q[-1]
+
+        if lo > qhi + 1:
+            q.append([lo, hi])
+            continue
+
+        q[-1][1] = max(qhi, hi)
+
+    x = 0
+    for lo, hi in q:
+        if x < lo:
+            print(x * 4000000 + Y)
+            exit(0)
+        x = max(x, hi + 1)
+        if x > target_row:
+            break
