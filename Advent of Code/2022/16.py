@@ -1,51 +1,76 @@
 from collections import deque
 
-pipes = {}
-rates = {}
-for line in open('input').read().splitlines():
-    name, rate = line[6:8], int(line[line.index('=') + 1: line.index(';')])
-    s = 'to valves' if 'to valves' in line else 'to valve'
-    _, next_pipes = line.split(s)
-    next_pipes = next_pipes.strip().split(', ')
-    rates[name] = rate
-    pipes[name] = next_pipes
+valves = {}
+tunnels = {}
 
-distances_from_k = {}
-for name, next_pipes in pipes.items():
-    seen = [name]
-    distance = []
-    q = deque([(name, 0)])
-    while q:
-        node, dist = q.popleft()
+for line in open('input'):
+    line = line.strip()
+    valve = line.split()[1]
+    flow = int(line.split(";")[0].split("=")[1])
+    targets = line.split("to ")[1].split(" ", 1)[1].split(", ")
+    valves[valve] = flow
+    tunnels[valve] = targets
 
-        for next_node in pipes[node]:
-            if next_node not in seen:
-                seen.append(next_node)
-                distance.append((next_node, dist + 1))
-                q.append((next_node, dist + 1))
+dists = {}
+nonempty = []
 
-    distances_from_k[name] = distance
+for valve in valves:
+    if valve != "AA" and not valves[valve]:
+        continue
 
-max_pressure = 0
-def open_pipes(name, pressure_so_far, time_left, left_to_open):
-    global max_pressure
-    if time_left <= 0 or left_to_open == []:
-        max_pressure = max(max_pressure, pressure_so_far)
-        return
+    if valve != "AA":
+        nonempty.append(valve)
 
-    for next_pipe, distance in distances_from_k[name]:
-        # if next pipe is of interest i.e. it has a positive rate
-        # and there is enough time to turn it on
-        if next_pipe in left_to_open and time_left - distance >= 1:
-            open_pipes(next_pipe,
-                       pressure_so_far + rates[next_pipe] * (time_left - distance - 1),
-                       time_left - distance - 1,
-                       [k for k in left_to_open if k != next_pipe])
+    dists[valve] = {valve: 0, "AA": 0}
+    visited = {valve}
 
-    max_pressure = max(max_pressure, pressure_so_far)
+    queue = deque([(0, valve)])
+
+    while queue:
+        distance, position = queue.popleft()
+        for neighbor in tunnels[position]:
+            if neighbor in visited:
+                continue
+            visited.add(neighbor)
+            if valves[neighbor]:
+                dists[valve][neighbor] = distance + 1
+            queue.append((distance + 1, neighbor))
+
+    del dists[valve][valve]
+    if valve != "AA":
+        del dists[valve]["AA"]
+
+indices = {}
+
+for index, element in enumerate(nonempty):
+    indices[element] = index
+
+cache = {}
 
 
-openable_pipes = [k for k, v in rates.items() if v > 0]
-open_pipes('AA', 0, 30, openable_pipes)
+def dfs(time, valve, bitmask):
+    if (time, valve, bitmask) in cache:
+        return cache[(time, valve, bitmask)]
 
-print(max_pressure)
+    maxval = 0
+    for neighbor in dists[valve]:
+        bit = 1 << indices[neighbor]
+        if bitmask & bit:
+            continue
+        remtime = time - dists[valve][neighbor] - 1
+        if remtime <= 0:
+            continue
+        maxval = max(maxval, dfs(remtime, neighbor, bitmask | bit) + valves[neighbor] * remtime)
+
+    cache[(time, valve, bitmask)] = maxval
+    return maxval
+
+
+b = (1 << len(nonempty)) - 1
+
+m = 0
+
+for i in range((b + 1) // 2):
+    m = max(m, dfs(26, "AA", i) + dfs(26, "AA", b ^ i))
+
+print(m)
