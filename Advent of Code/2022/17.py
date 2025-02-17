@@ -10,13 +10,30 @@ jets = [1 if x == ">" else -1 for x in open('input').read().strip()]
 solid = {x - 1j for x in range(7)}
 height = 0
 
+seen = {}
+
+
+def summarize():
+    o = [-20] * 7
+
+    for x in solid:
+        r = int(x.real)
+        i = int(x.imag)
+        o[r] = max(o[r], i)
+
+    top = max(o)
+    return tuple(x - top for x in o)
+
+
 rc = 0
 
 ri = 0
 rock = {x + 2 + (height + 3) * 1j for x in rocks[ri]}
 
-while rc < 2022:
-    for jet in jets:
+T = 1000000000000
+
+while rc < T:
+    for ji, jet in enumerate(jets):
         moved = {x + jet for x in rock}
         if all(0 <= x.real < 7 for x in moved) and not (moved & solid):
             rock = moved
@@ -26,11 +43,20 @@ while rc < 2022:
             rc += 1
             o = height
             height = max(x.imag for x in solid) + 1
-            if rc >= 2022:
+            if rc >= T:
                 break
             ri = (ri + 1) % 5
             rock = {x + 2 + (height + 3) * 1j for x in rocks[ri]}
+            key = (ji, ri, summarize())
+            if key in seen:
+                lrc, lh = seen[key]
+                rem = T - rc
+                rep = rem // (rc - lrc)
+                offset = rep * (height - lh)
+                rc += rep * (rc - lrc)
+                seen = {}
+            seen[key] = (rc, height)
         else:
             rock = moved
 
-print(int(height))
+print(int(height + offset))
