@@ -37,9 +37,10 @@ def dfs(bp, maxspend, cache, time, bots, amt):
     return maxval
 
 
-total = 0
+total = 1
 
-for i, line in enumerate(open('input')):
+lines = open('input').read().splitlines()[:3]
+for i, line in enumerate(lines):
     bp = []
     maxspend = [0, 0, 0]
     for section in line.split(": ")[1].split(". "):
@@ -50,7 +51,7 @@ for i, line in enumerate(open('input')):
             recipe.append((x, y))
             maxspend[y] = max(maxspend[y], x)
         bp.append(recipe)
-    v = dfs(bp, maxspend, {}, 24, [1, 0, 0, 0], [0, 0, 0, 0])
-    total += (i + 1) * v
+    v = dfs(bp, maxspend, {}, 32, [1, 0, 0, 0], [0, 0, 0, 0])
+    total *= v
 
 print(total)
