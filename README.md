@@ -14,3 +14,4 @@ Each folder contains individual problem solutions. Contributions, optimizations,
 
 | ![2024](Advent%20of%20Code/2024/2024.png) | ![2023](Advent%20of%20Code/2023/2023.png) |
 |--------------------------------------------|--------------------------------------------|
+| ![2022](Advent%20of%20Code/2022/2022.PNG) |                                          |
