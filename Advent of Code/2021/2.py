@@ -1,12 +1,13 @@
-x, y = 0, 0
+x, y, aim = 0, 0, 0
 
 for l in open('input').read().split('\n'):
     dir, dist = l.split()
     if dir == 'forward':
         x += int(dist)
+        y += aim * int(dist)
     elif dir == 'up':
-        y -= int(dist)
+        aim -= int(dist)
     elif dir == 'down':
-        y += int(dist)
+        aim += int(dist)
 
 print(x * y)
