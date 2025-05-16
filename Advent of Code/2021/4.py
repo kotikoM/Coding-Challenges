@@ -1,5 +1,6 @@
 class Player:
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.number_map = {}
         self.row_map = {}
         self.col_map = {}
@@ -31,17 +32,22 @@ lines = open('input').read().split('\n\n')
 numbers = map(int, lines[0].split(','))
 players = []
 for i in range(1, len(lines)):
-    player = Player()
+    p = Player(i)
     for j, line in enumerate(lines[i].split('\n')):
         for k, number in enumerate(line.split()):
-            player.add_numbers(int(number), j, k)
-    players.append(player)
+            p.add_numbers(int(number), j, k)
+    players.append(p)
 
 for n in numbers:
+    winners = []
     for p in players:
         p.mark_number(n)
         if p.is_winner():
-            marked = set().union(*p.row_map.values(), *p.col_map.values())
-            unmarked = set(p.number_map.keys()) - set(marked)
+            winners.append(p)
+    for winner in winners:
+        if len(players) == 1:
+            marked = set().union(*winner.row_map.values(), *winner.col_map.values())
+            unmarked = set(winner.number_map.keys()) - marked
             print(sum(unmarked) * n)
             exit()
+        players.remove(winner)
