@@ -13,6 +13,6 @@ def simulate(timer, days_left):
         return simulate(6, days_left - timer - 1) + simulate(8, days_left - timer - 1)
 
 
-days = 80
+days = 256
 total = sum(simulate(timer, days - 1) for timer in initial_fish)
 print(total)
