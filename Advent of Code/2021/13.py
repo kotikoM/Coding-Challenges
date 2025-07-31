@@ -20,3 +20,10 @@ for f in folds:
 
     cords = new_cords
     new_cords = set()
+
+max_x = max(x for x, _ in cords)
+max_y = max(y for _, y in cords)
+
+for y in range(max_y + 1):
+    line = ''.join('#' if (x, y) in cords else '.' for x in range(max_x + 1))
+    print(line) # HGAJBEHC
