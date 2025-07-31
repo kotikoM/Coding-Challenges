@@ -30,8 +30,10 @@ def step(grid):
 
     return flashes
 
-total_flashes = 0
-for _ in range(100):
-    total_flashes += step(grid)
-
-print(total_flashes)
+step_count = 0
+while True:
+    step_count += 1
+    flashes = step(grid)
+    if flashes == 100:
+        print(step_count)
+        break
