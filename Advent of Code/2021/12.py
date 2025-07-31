@@ -14,7 +14,7 @@ class Node:
 total = 0
 
 
-def find_paths(current_node, path, visited):
+def find_paths(current_node, path, visited, visited_twice):
     global total
 
     if current_node.value == 'end':
@@ -25,14 +25,22 @@ def find_paths(current_node, path, visited):
     neighbors = current_node.edges_to
 
     for n in neighbors:
-        if n.value.islower() and n.value in visited:
+        if n.value == 'start':
             continue
 
-        new_visited = visited.copy()
-        if n.value.islower():
-            new_visited.append(n.value)
+        is_small = n.value.islower()
 
-        find_paths(n, path + [current_node.value], new_visited)
+        if is_small and n.value in visited:
+            if visited_twice:
+                continue
+            else:
+                find_paths(n, path + [current_node.value], visited, True)
+        else:
+            new_visited = visited.copy()
+            if is_small:
+                new_visited.append(n.value)
+
+            find_paths(n, path + [current_node.value], new_visited, visited_twice)
 
 
 nodes = {}
@@ -46,5 +54,5 @@ for line in open('input').read().splitlines():
     nodes[node1].add_child(nodes[node2])
     nodes[node2].add_child(nodes[node1])
 
-find_paths(nodes['start'], [], ['start'])
+find_paths(nodes['start'], [], ['start'], False)
 print(total)
