@@ -20,7 +20,7 @@ def count_chars(pair, steps):
     return counter
 
 
-steps = 10
+steps = 40
 total_count = Counter(template)
 for a, b in zip(template, template[1:]):
     pair = a + b
