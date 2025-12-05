@@ -1,11 +1,13 @@
-ranges, ingredients = open('input').read().split('\n\n')
+ranges, _ = open('input').read().split('\n\n')
 ranges = [tuple(map(int, t.split('-'))) for t in ranges.split('\n')]
-ingredients = list(map(int, ingredients.split('\n')))
+ranges.sort()
 
-fresh = 0
-for i in ingredients:
-    for l, r in ranges:
-        if l <= i <= r:
-            fresh += 1
-            break
-print(fresh)
+merged = []
+for l, r in ranges:
+    if not merged or l > merged[-1][1] + 1:
+        merged.append([l, r])
+    else:
+        merged[-1][1] = max(merged[-1][1], r)
+
+total = sum(r - l + 1 for l, r in merged)
+print(total)
