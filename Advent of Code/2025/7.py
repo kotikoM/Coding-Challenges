@@ -1,24 +1,24 @@
-from collections import deque
+from functools import lru_cache
 
-grid = [list(l) for l in open('input').read().splitlines()]
+
+@lru_cache(maxsize=None)
+def dfs(r, c):
+    if r >= len(grid) or c < 0 or c >= len(grid[0]):
+        return 1
+
+    cell = grid[r][c]
+
+    if cell == '.':
+        return dfs(r + 1, c)
+    elif cell == '^':
+        left = dfs(r + 1, c - 1)
+        right = dfs(r + 1, c + 1)
+        return left + right
+    else:
+        return dfs(r + 1, c)
+
+
+grid = [list(line.strip()) for line in open('input')]
+
 sx, sy = 0, ''.join(grid[0]).index('S')
-
-split_count = 0
-q = deque([(sx + 1, sy)])
-visited = set()
-while q:
-    x, y = q.pop()
-    if (x, y) in visited or x + 1 >= len(grid):
-        continue
-    visited.add((x, y))
-
-    if grid[x][y] == '^':
-        split_count += 1
-        if y - 1 >= 0:
-            q.append((x + 1, y - 1))
-        if y + 1 < len(grid[0]):
-            q.append((x + 1, y + 1))
-    elif grid[x][y] == '.':
-        q.append((x + 1, y))
-
-print(split_count)
+print(dfs(sx + 1, sy))
