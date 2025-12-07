@@ -1,12 +1,21 @@
-from math import prod
+lines = [line.strip("\n") for line in open('input')]
+cols = list(zip(*lines))
 
-lines = [l.split() for l in open("input")]
-numbers = [list(map(int, r)) for r in lines[:-1]]
-ops = lines[-1]
+groups = []
+group = []
+
+for col in cols:
+    if set(col) == {" "}:
+        groups.append(group)
+        group = []
+    else:
+        group.append(col)
+
+groups.append(group)
 
 total = 0
-for col, op in enumerate(ops):
-    nums = [row[col] for row in numbers]
-    total += (prod(nums) if op == '*' else sum(nums))
+
+for group in groups:
+    total += eval(group[0][-1].join("".join(line[:-1]) for line in group))
 
 print(total)
