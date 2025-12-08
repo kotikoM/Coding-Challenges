@@ -1,5 +1,4 @@
 from itertools import combinations
-from math import prod
 
 
 def distance(a, b):
@@ -26,35 +25,29 @@ class Box:
     def connected_to(self):
         return [f"({b.x},{b.y},{b.z})" for b in self.connections]
 
+    def full_circuit(self):
+        visited = set()
+        stack = [self]
+        while stack:
+            current = stack.pop()
+            if current not in visited:
+                visited.add(current)
+                stack.extend(current.connections)
+        return visited
+
 
 boxes = [Box(*list(map(int, l.split(',')))) for l in open('input').read().splitlines()]
 
 pairs = [(a, b, distance(a, b)) for a, b in combinations(boxes, 2)]
 pairs.sort(key=lambda x: x[2])
 
-for i in range(1000):
-    a, b, _ = pairs[i]
+last_pair = None
+for a, b, _ in pairs:
+    if b in a.full_circuit(): continue
+
     a.make_connection(b)
+    last_pair = (a, b)
+    if len(a.full_circuit()) == len(boxes):
+        break
 
-for b in boxes:
-    visited = set()
-    stack = [b]
-    while stack:
-        current = stack.pop()
-        if current not in visited:
-            visited.add(current)
-            for neighbor in current.connections:
-                stack.append(neighbor)
-
-    b.connections = list(visited - {b})
-
-groups = []
-visited = set()
-for b in boxes:
-    if b in visited: continue
-    visited.add(b)
-    for c in b.connections:
-        visited.add(c)
-    groups.append(1 + len(b.connections))
-
-print(prod(sorted(groups, reverse=True)[:3]))
+print(last_pair[0].x * last_pair[1].x)
