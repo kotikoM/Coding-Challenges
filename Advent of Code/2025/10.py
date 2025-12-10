@@ -1,38 +1,41 @@
-from itertools import combinations_with_replacement
-import re
+import z3
 
-lights, all_buttons = [], []
+total_button_sum = 0
 for line in open('input').read().splitlines():
-    light = re.search(r'\[(.*?)\]', line).group(1)
-    lights.append(light)
+    parts = line.split()
+    button_strings = parts[1:-1]
+    expected_joltage_string = parts[-1]
 
-    parens = re.findall(r'\((.*?)\)', line)
-    buttons = [list(map(int, p.split(','))) if ',' in p else [int(p)] for p in parens]
-    all_buttons.append(buttons)
+    # Parse button connections
+    button_indices = []
+    for button_str in button_strings:
+        indices = [int(x) for x in button_str[1:-1].split(',')]
+        button_indices.append(indices)
 
-total_presses = []
-for light, buttons in zip(lights, all_buttons):
-    target = list(light)
-    n = len(light)
-    i = 1
-    found = False
+    # Parse expected output
+    expected_joltage = [int(x) for x in expected_joltage_string[1:-1].split(',')]
 
-    while not found:
-        button_combinations = combinations_with_replacement(buttons, i)
+    # Create integer variables for each button
+    button_vars = [z3.Int(f'Button{i}') for i in range(len(button_strings))]
 
-        for combo in button_combinations:
-            result = ['.'] * n
+    # Create equations linking buttons to expected output
+    equations = []
+    for i in range(len(expected_joltage)):
+        involved_buttons = [button_vars[j] for j in range(len(button_indices)) if i in button_indices[j]]
+        equations.append(sum(involved_buttons) == expected_joltage[i])
 
-            for button_set in combo:
-                for b in button_set:
-                    result[b] = '#' if result[b] == '.' else '.'
+    # Set up the solver
+    solver = z3.Optimize()
+    solver.minimize(sum(button_vars))
+    for eq in equations:
+        solver.add(eq)
+    for var in button_vars:
+        solver.add(var >= 0)
 
-            if result == target:
-                print("  → Found match using", i, "presses:", combo)
-                found = True
-                total_presses.append(i)
-                break
+    # Solve
+    assert solver.check()
+    model = solver.model()
+    for var in model.decls():
+        total_button_sum += model[var].as_long()
 
-        i += 1
-
-print(sum(total_presses))
+print(total_button_sum)
