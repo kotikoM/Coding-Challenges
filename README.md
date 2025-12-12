@@ -13,6 +13,6 @@ Each folder contains individual problem solutions.
 
 ## Advent of Code Yearly Covers
 
-| ![2024](Advent%20of%20Code/2024/2024.png) | ![2023](Advent%20of%20Code/2023/2023.png) |
-|--------------------------------------------|--------------------------------------------|
-| ![2022](Advent%20of%20Code/2022/2022.PNG) |                                          |
+| ![2025](Advent%20of%20Code/2025/2025.png) | ![2024](Advent%20of%20Code/2024/2024.png) |
+|-------------------------------------------|-------------------------------------------|
+| ![2023](Advent%20of%20Code/2023/2023.png) | ![2022](Advent%20of%20Code/2022/2022.PNG) |
